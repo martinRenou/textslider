@@ -42,11 +42,11 @@ export
 class TextSliderView extends DOMWidgetView {
   render() {
     // Initialize text formatter
-    this.model.on("change:format", () => {
-      this.formatter = d3Format.format(this.model.get("format"));
+    this.model.on('change:format', () => {
+      this.formatter = d3Format.format(this.model.get('format'));
       this.updateText();
     });
-    this.formatter = d3Format.format(this.model.get("format"));
+    this.formatter = d3Format.format(this.model.get('format'));
 
     // Initialize text element
     this.textElement = document.createElement('span');
@@ -76,6 +76,33 @@ class TextSliderView extends DOMWidgetView {
   }
 
   /**
+   * Set the new widget value.
+   */
+  setValue(value: number) {
+    const min = this.model.get('min');
+    const max = this.model.get('max');
+
+    if (min !== null && value < min) {
+      value = min;
+    }
+    if (max !== null && value > max) {
+      value = max;
+    }
+
+    if (value !== this.model.get('value')) {
+      this.model.set('value', value);
+      this.touch();
+    }
+  }
+
+  /**
+   * Return the value that is delta steps away from base.
+   */
+  adjust(base: number, delta: number) {
+    return base + delta * this.model.get('step');
+  }
+
+  /**
    * Start dragging, this will initialize the dragging and setup event listeners for mouse movements.
    */
   startDragging(event: MouseEvent) {
@@ -85,7 +112,7 @@ class TextSliderView extends DOMWidgetView {
     this.dragging = true;
     this.startDragX = event.pageX;
     this.startDragY = event.pageY;
-    this.initialDragValue = this.model.get("value");
+    this.initialDragValue = this.model.get('value');
 
     document.addEventListener('mousemove', this.dragListener);
     document.addEventListener('mouseup', this.endDraggingListener);
@@ -95,12 +122,23 @@ class TextSliderView extends DOMWidgetView {
    * Handle drag event, this will modify the value depending on the mouse position.
    */
   drag(event: MouseEvent) {
+    if (this.initialDragValue == null || this.startDragX == null) {
+      return;
+    }
+
+    this.setValue(this.adjust(this.initialDragValue, Math.round((event.pageX - this.startDragX) / 10)));
   }
 
   /**
    * End dragging, this will remove event listeners for mouse movements.
    */
   endDragging(event: MouseEvent) {
+    if (this.initialDragValue == null || this.startDragX == null) {
+      return;
+    }
+
+    this.setValue(this.adjust(this.initialDragValue, Math.round((event.pageX - this.startDragX) / 10)));
+
     document.removeEventListener('mousemove', this.dragListener);
     document.removeEventListener('mouseup', this.endDraggingListener);
   }
