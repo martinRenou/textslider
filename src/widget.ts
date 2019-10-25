@@ -9,6 +9,9 @@ import {
   MODULE_NAME, MODULE_VERSION
 } from './version';
 
+// Load CSS
+import '../css/textslider.css';
+
 
 export
 class TextSliderModel extends DOMWidgetModel {
@@ -36,13 +39,20 @@ class TextSliderModel extends DOMWidgetModel {
 export
 class TextSliderView extends DOMWidgetView {
   render() {
+    this.textElement = document.createElement('span');
+    this.textElement.classList.add('jupyter-widgets-textslider');
+
+    this.el.appendChild(this.textElement);
+
     this.value_changed();
     this.model.on('change:value', this.value_changed, this);
   }
 
   value_changed() {
-    this.el.textContent = this.model.get('value');
+    this.textElement.textContent = this.model.get('value');
   }
+
+  textElement: HTMLSpanElement;
 
   model: TextSliderModel;
 }
