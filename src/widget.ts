@@ -1,6 +1,8 @@
 // Copyright (c) QuantStack
 // Distributed under the terms of the Modified BSD License.
 
+const d3Format = require('d3-format');
+
 import {
   DOMWidgetModel, DOMWidgetView
 } from '@jupyter-widgets/base';
@@ -44,15 +46,23 @@ class TextSliderView extends DOMWidgetView {
 
     this.el.appendChild(this.textElement);
 
-    this.value_changed();
-    this.model.on('change:value', this.value_changed, this);
+    // Initialize text formatter
+    this.model.on("change:format", () => {
+      this.formatter = d3Format.format(this.model.get("format"));
+      this.updateText();
+    });
+    this.formatter = d3Format.format(this.model.get("format"));
+
+    this.updateText();
+    this.model.on('change:value', this.updateText.bind(this));
   }
 
-  value_changed() {
-    this.textElement.textContent = this.model.get('value');
+  updateText() {
+    this.textElement.textContent = this.formatter(this.model.get('value'));
   }
 
   textElement: HTMLSpanElement;
+  formatter: (value: number) => string;
 
   model: TextSliderModel;
 }
