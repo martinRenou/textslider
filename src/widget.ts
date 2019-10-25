@@ -103,6 +103,17 @@ class TextSliderView extends DOMWidgetView {
   }
 
   /**
+   * Handle a mouse move that impacts the current value.
+   */
+  handleMouseMove(event: MouseEvent) {
+    if (this.initialDragValue == null || this.startDragX == null) {
+      return;
+    }
+
+    this.setValue(this.adjust(this.initialDragValue, Math.round((event.pageX - this.startDragX) / 10)));
+  }
+
+  /**
    * Start dragging, this will initialize the dragging and setup event listeners for mouse movements.
    */
   startDragging(event: MouseEvent) {
@@ -122,22 +133,14 @@ class TextSliderView extends DOMWidgetView {
    * Handle drag event, this will modify the value depending on the mouse position.
    */
   drag(event: MouseEvent) {
-    if (this.initialDragValue == null || this.startDragX == null) {
-      return;
-    }
-
-    this.setValue(this.adjust(this.initialDragValue, Math.round((event.pageX - this.startDragX) / 10)));
+    this.handleMouseMove(event);
   }
 
   /**
    * End dragging, this will remove event listeners for mouse movements.
    */
   endDragging(event: MouseEvent) {
-    if (this.initialDragValue == null || this.startDragX == null) {
-      return;
-    }
-
-    this.setValue(this.adjust(this.initialDragValue, Math.round((event.pageX - this.startDragX) / 10)));
+    this.handleMouseMove(event);
 
     document.removeEventListener('mousemove', this.dragListener);
     document.removeEventListener('mouseup', this.endDraggingListener);
