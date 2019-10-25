@@ -57,14 +57,63 @@ class TextSliderView extends DOMWidgetView {
 
     this.updateText();
     this.model.on('change:value', this.updateText.bind(this));
+
+    // Initialize event listeners
+    this.dragging = false;
+    this.startDragX = null;
+    this.startDragY = null;
+    this.initialDragValue = null;
+    this.dragListener = { handleEvent: this.drag.bind(this) };
+    this.endDraggingListener = { handleEvent: this.endDragging.bind(this) };
+    this.textElement.onmousedown = this.startDragging.bind(this);
   }
 
+  /**
+   * Update the text element.
+   */
   updateText() {
     this.textElement.textContent = this.formatter(this.model.get('value'));
   }
 
+  /**
+   * Start dragging, this will initialize the dragging and setup event listeners for mouse movements.
+   */
+  startDragging(event: MouseEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.dragging = true;
+    this.startDragX = event.pageX;
+    this.startDragY = event.pageY;
+    this.initialDragValue = this.model.get("value");
+
+    document.addEventListener('mousemove', this.dragListener);
+    document.addEventListener('mouseup', this.endDraggingListener);
+  }
+
+  /**
+   * Handle drag event, this will modify the value depending on the mouse position.
+   */
+  drag(event: MouseEvent) {
+  }
+
+  /**
+   * End dragging, this will remove event listeners for mouse movements.
+   */
+  endDragging(event: MouseEvent) {
+    document.removeEventListener('mousemove', this.dragListener);
+    document.removeEventListener('mouseup', this.endDraggingListener);
+  }
+
   textElement: HTMLSpanElement;
   formatter: (value: number) => string;
+
+  dragging: boolean;
+  startDragX: number | null;
+  startDragY: number | null;
+  initialDragValue: number | null;
+  dragListener: EventListenerObject;
+  endDraggingListener: EventListenerObject;
 
   model: TextSliderModel;
 }
