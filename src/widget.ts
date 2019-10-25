@@ -41,17 +41,19 @@ class TextSliderModel extends DOMWidgetModel {
 export
 class TextSliderView extends DOMWidgetView {
   render() {
-    this.textElement = document.createElement('span');
-    this.textElement.classList.add('jupyter-widgets-textslider');
-
-    this.el.appendChild(this.textElement);
-
     // Initialize text formatter
     this.model.on("change:format", () => {
       this.formatter = d3Format.format(this.model.get("format"));
       this.updateText();
     });
     this.formatter = d3Format.format(this.model.get("format"));
+
+    // Initialize text element
+    this.textElement = document.createElement('span');
+    this.textElement.classList.add('jupyter-widgets-textslider');
+    this.textElement.title = 'Drag to adjust';
+
+    this.el.appendChild(this.textElement);
 
     this.updateText();
     this.model.on('change:value', this.updateText.bind(this));
