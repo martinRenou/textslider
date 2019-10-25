@@ -65,7 +65,9 @@ class TextSliderView extends DOMWidgetView {
     this.initialDragValue = null;
     this.dragListener = { handleEvent: this.drag.bind(this) };
     this.endDraggingListener = { handleEvent: this.endDragging.bind(this) };
+
     this.textElement.onmousedown = this.startDragging.bind(this);
+    this.textElement.onwheel = this.handleWheel.bind(this);
   }
 
   /**
@@ -144,6 +146,19 @@ class TextSliderView extends DOMWidgetView {
 
     document.removeEventListener('mousemove', this.dragListener);
     document.removeEventListener('mouseup', this.endDraggingListener);
+  }
+
+  handleWheel(event: WheelEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const deltaY = event.deltaY;
+
+    if (deltaY == 0) {
+      return;
+    }
+
+    this.setValue(this.adjust(this.model.get("value"), deltaY / Math.abs(deltaY)));
   }
 
   textElement: HTMLSpanElement;
