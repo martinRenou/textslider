@@ -8,7 +8,7 @@ import {
 } from '@jupyter-widgets/base';
 
 import {
-  BoundedFloatModel
+  BoundedFloatModel, BoundedIntModel
 } from '@jupyter-widgets/controls';
 
 import {
@@ -19,31 +19,7 @@ import {
 import '../css/textslider.css';
 
 
-export
-class FloatTextSliderModel extends BoundedFloatModel {
-  defaults() {
-    return {...super.defaults(),
-      _model_name: FloatTextSliderModel.model_name,
-      _model_module: FloatTextSliderModel.model_module,
-      _model_module_version: FloatTextSliderModel.model_module_version,
-      _view_name: FloatTextSliderModel.view_name,
-      _view_module: FloatTextSliderModel.view_module,
-      _view_module_version: FloatTextSliderModel.view_module_version,
-      value : 0
-    };
-  }
-
-  static model_name = 'FloatTextSliderModel';
-  static model_module = MODULE_NAME;
-  static model_module_version = MODULE_VERSION;
-  static view_name = 'FloatTextSliderView';
-  static view_module = MODULE_NAME;
-  static view_module_version = MODULE_VERSION;
-}
-
-
-export
-class FloatTextSliderView extends DOMWidgetView {
+abstract class _TextSliderView extends DOMWidgetView {
   render() {
     // Initialize text formatter
     this.model.on('change:format', () => {
@@ -94,6 +70,8 @@ class FloatTextSliderView extends DOMWidgetView {
     if (max !== null && value > max) {
       value = max;
     }
+
+    value = this.validateValue(value);
 
     if (value !== this.model.get('value')) {
       this.model.set('value', value);
@@ -165,6 +143,8 @@ class FloatTextSliderView extends DOMWidgetView {
     this.setValue(this.adjust(this.model.get("value"), deltaY / Math.abs(deltaY)));
   }
 
+  abstract validateValue(x: number) : number;
+
   textElement: HTMLSpanElement;
   formatter: (value: number) => string;
 
@@ -174,6 +154,62 @@ class FloatTextSliderView extends DOMWidgetView {
   initialDragValue: number | null;
   dragListener: EventListenerObject;
   endDraggingListener: EventListenerObject;
+}
 
-  model: FloatTextSliderModel;
+export
+class FloatTextSliderModel extends BoundedFloatModel {
+  defaults() {
+    return {...super.defaults(),
+      _model_name: FloatTextSliderModel.model_name,
+      _model_module: FloatTextSliderModel.model_module,
+      _model_module_version: FloatTextSliderModel.model_module_version,
+      _view_name: FloatTextSliderModel.view_name,
+      _view_module: FloatTextSliderModel.view_module,
+      _view_module_version: FloatTextSliderModel.view_module_version,
+      value : 0
+    };
+  }
+
+  static model_name = 'FloatTextSliderModel';
+  static model_module = MODULE_NAME;
+  static model_module_version = MODULE_VERSION;
+  static view_name = 'FloatTextSliderView';
+  static view_module = MODULE_NAME;
+  static view_module_version = MODULE_VERSION;
+}
+
+export
+class FloatTextSliderView extends _TextSliderView {
+  validateValue(x: number) : number {
+    return x;
+  }
+}
+
+export
+class IntTextSliderModel extends BoundedIntModel {
+  defaults() {
+    return {...super.defaults(),
+      _model_name: IntTextSliderModel.model_name,
+      _model_module: IntTextSliderModel.model_module,
+      _model_module_version: IntTextSliderModel.model_module_version,
+      _view_name: IntTextSliderModel.view_name,
+      _view_module: IntTextSliderModel.view_module,
+      _view_module_version: IntTextSliderModel.view_module_version,
+      value : 0
+    };
+  }
+
+  static model_name = 'IntTextSliderModel';
+  static model_module = MODULE_NAME;
+  static model_module_version = MODULE_VERSION;
+  static view_name = 'IntTextSliderView';
+  static view_module = MODULE_NAME;
+  static view_module_version = MODULE_VERSION;
+}
+
+export
+class IntTextSliderView extends _TextSliderView {
+  validateValue(x: number) : number {
+    return Math.floor(x);
+  }
 }
