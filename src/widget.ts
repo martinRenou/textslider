@@ -4,8 +4,12 @@
 const d3Format = require('d3-format');
 
 import {
-  DOMWidgetModel, DOMWidgetView
+  DOMWidgetView
 } from '@jupyter-widgets/base';
+
+import {
+  BoundedFloatModel
+} from '@jupyter-widgets/controls';
 
 import {
   MODULE_NAME, MODULE_VERSION
@@ -16,30 +20,30 @@ import '../css/textslider.css';
 
 
 export
-class TextSliderModel extends DOMWidgetModel {
+class FloatTextSliderModel extends BoundedFloatModel {
   defaults() {
     return {...super.defaults(),
-      _model_name: TextSliderModel.model_name,
-      _model_module: TextSliderModel.model_module,
-      _model_module_version: TextSliderModel.model_module_version,
-      _view_name: TextSliderModel.view_name,
-      _view_module: TextSliderModel.view_module,
-      _view_module_version: TextSliderModel.view_module_version,
+      _model_name: FloatTextSliderModel.model_name,
+      _model_module: FloatTextSliderModel.model_module,
+      _model_module_version: FloatTextSliderModel.model_module_version,
+      _view_name: FloatTextSliderModel.view_name,
+      _view_module: FloatTextSliderModel.view_module,
+      _view_module_version: FloatTextSliderModel.view_module_version,
       value : 0
     };
   }
 
-  static model_name = 'TextSliderModel';
+  static model_name = 'FloatTextSliderModel';
   static model_module = MODULE_NAME;
   static model_module_version = MODULE_VERSION;
-  static view_name = 'TextSliderView';
+  static view_name = 'FloatTextSliderView';
   static view_module = MODULE_NAME;
   static view_module_version = MODULE_VERSION;
 }
 
 
 export
-class TextSliderView extends DOMWidgetView {
+class FloatTextSliderView extends DOMWidgetView {
   render() {
     // Initialize text formatter
     this.model.on('change:format', () => {
@@ -171,5 +175,5 @@ class TextSliderView extends DOMWidgetView {
   dragListener: EventListenerObject;
   endDraggingListener: EventListenerObject;
 
-  model: TextSliderModel;
+  model: FloatTextSliderModel;
 }
